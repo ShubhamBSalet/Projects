@@ -1,145 +1,97 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" integrity="sha384-3AB7yXWz4OeoZcPbieVW64vVXEwADiYyAEhwilzWsLw+9FgqpyjjStpPnpBO8o8S" crossorigin="anonymous"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="invoice.css" />
-    <title>Invoice Page</title>
-  </head>
-
-  <style>
-    /* body{   
-      background-image: url("./js/invoice.jpg");
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-size: cover;
-    } */
-    input{
-      border: none;
-      border-bottom: 2px solid black;
-      backdrop-filter: blur(5px);
-    }
-  </style>
-  <body>
-    <div class="container-fluid text-light">
-        <h1 class="text-center">Invoice Generator</h1>
-        
-        <table class="table"></table>
-
-        <table class="table" id="mainTable">
-          
-          <tr>
-            <td>Item</td>
-            <td>HSN/SAC</td>
-            <td>GST Rate</td>
-            <td>Quantity</td>
-            <td>Rate</td>
-            <td>Amount</td>
-            <td>CGST</td>
-            <td>SGST</td>
-            <td>Total</td>
-            <td>Remove Line</td>
-          </tr>
-
-        </table>
-
-        <table class="table" id="totalTable"></table>
-        
-        <div class="text-center">
-          
-          <button class="btn btn-primary save" id="save" title="Save" type="button">Save</button>
-            
-          <tr>    
-            <td colspan="10" class="text-right">
-              <button class="btn btn-info add-button" title="Add New Line" id="add" type="button">Add New Line</button>
-            </td>
-          </tr>
-        
-        </div>
-
-    </div>
-
-  </body>
-  <script src="./add.js"></script>
-</html>
-
- -->
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invoice Page</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"/>
+    
+    <!-- jQuery & Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
     <style>
+      body {
+        background-color: #f8f9fa;
+        padding: 20px;
+      }
+
       input {
         border: none;
-        border-bottom: 2px solid black;
-        backdrop-filter: blur(5px);
+        border-bottom: 2px solid #000;
+        background-color: transparent;
+        width: 100%;
+        padding: 5px;
+      }
+
+      table th, table td {
+        text-align: center;
+        vertical-align: middle !important;
+      }
+
+      #totals div {
+        margin-top: 10px;
+      }
+
+      h1, h3 {
+        margin-top: 30px;
+        color: #333;
       }
     </style>
   </head>
 
   <body>
-    <div class="container-fluid text-light">
+    <div class="container">
       <h1 class="text-center">Invoice Generator</h1>
 
-      <table class="table" id="mainTable">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>HSN/SAC</th>
-            <th>GST Rate</th>
-            <th>Quantity</th>
-            <th>Rate</th>
-            <th>Total</th>
-            <th>CGST</th>
-            <th>SGST</th>
-            <th>Grand Total</th>
-            <th>Remove Line</th>
-          </tr>
-        </thead>
-
-        <tbody id="invoiceBody"></tbody>
-      </table>
-
-      <div class="row text-center" id="totals">
-        
-        <div class="col-md-3">
-          <strong>Total Amount:</strong> <span id="totalAmount">0.00</span>
-        </div>
-        
-        <div class="col-md-3">
-          <strong>Total GST:</strong> <span id="totalGST">0.00</span>
-        </div>
-        
-        <div class="col-md-3">
-          <strong>Total CGST:</strong> <span id="totalCGST">0.00</span>
-        </div>
-        
-        <div class="col-md-3">
-          <strong>Grand Total:</strong> <span id="grandTotal">0.00</span>
-        </div>
-      
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered" id="mainTable">
+          <thead class="bg-primary text-white">
+            <tr>
+              <th>Item</th>
+              <th>HSN/SAC</th>
+              <th>GST Rate</th>
+              <th>Quantity</th>
+              <th>Rate</th>
+              <th>Total</th>
+              <th>CGST</th>
+              <th>SGST</th>
+              <th>Grand Total</th>
+              <th>Remove</th>
+            </tr>
+          </thead>
+          <tbody id="invoiceBody"></tbody>
+        </table>
       </div>
 
-      <div class="text-center" style="margin-top: 20px">
-        <button class="btn btn-primary" id="save">Save</button>
-        <button class="btn btn-info" id="add">Add New Line</button>
+      <div class="row text-center" id="totals">
+        <div class="col-sm-6 col-md-3">
+          <strong>Total Amount:</strong> <span id="totalAmount">0.00</span>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <strong>Total GST:</strong> <span id="totalGST">0.00</span>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <strong>Total CGST:</strong> <span id="totalCGST">0.00</span>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <strong>Grand Total:</strong> <span id="grandTotal">0.00</span>
+        </div>
+      </div>
+
+      <div class="text-center" style="margin-top: 30px;">
+        <button class="btn btn-success" id="save"><i class="fas fa-save"></i> Save</button>
+        <button class="btn btn-primary" id="add"><i class="fas fa-plus"></i> Add New Line</button>
       </div>
 
       <h3 class="text-center">Saved Invoice Data</h3>
-      <table class="table table-bordered" id="savedTable"></table>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover" id="savedTable"></table>
+      </div>
     </div>
 
     <script src="./add.js"></script>
