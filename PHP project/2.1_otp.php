@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>OTP</title>
+</head>
+
+<body>
+
+    <?php
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        include '_dbconnect.php';
+        session_start();
+
+        $enrollment = $_POST['enrollment'];
+        $_SESSION['Enrollment'] = $enrollment;
+        $to_email = $_POST['email'];
+        $OTP = rand(100000, 999999);
+        $_SESSION['OTP'] = $OTP;
+
+        $user_exists = "SELECT * FROM `signup` WHERE enrollment='$enrollment' AND email = '$to_email'";
+        $result = mysqli_query($conn, $user_exists);
+        $num_rows = mysqli_num_rows($result);
+
+        if ($num_rows > 0) {
+
+            $subject = 'Testing PHP Mail';
+            $message = "
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+
+                        <div style='background-color: rgb(106, 106, 106); color: aliceblue; margin-left: 50px; margin-right:50px; padding: 20px;' width=100>
+                            <h1 style='text-align:center;'>$OTP</h1>
+                        </div>
+
+                    </body>
+                    </html>
+                    ";
+
+            $headers = "Content-type: text/html; charset=UTF-8" . "\r\n";
+            $headers .= 'From:user@gmail.com';
+            
+            mail($to_email, $subject, $message, $headers);
+            header("Location: 3_Sign_in_ver.php");
+            exit();
+        } 
+        else {
+            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Please Try again, Your Email ID is not exsist...!</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <center><a class="btn btn-outline-primary btn-lg" href="2_Sign_in.php" role="button">Sign In</a><center>';
+        }
+    } 
+    else {
+        echo '<div class="jumbotron my-5 mx-4">
+            <h1 class="display-4">You are not Sign In</h1>
+            <p class="lead">To sign in go to sign in page.</p>
+            <hr class="my-4">
+            <p>Click the button to go sign in page</p>
+            <a class="btn btn-outline-primary btn-lg" href="2_Sign_in.php" role="button">Sign In</a>
+        </div>';
+    }
+    ?>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
