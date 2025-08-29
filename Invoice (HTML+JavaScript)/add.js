@@ -1,5 +1,4 @@
 $(document).ready(function () {
-  
   let index = 0;
 
   function addRow(data = {}) {
@@ -24,7 +23,6 @@ $(document).ready(function () {
 
   function calculateTax(i) {
     $(`#qty${i}, #rate${i}`).on("input", function () {
-      
       let qty = parseFloat($(`#qty${i}`).val()) || 0;
       let rate = parseFloat($(`#rate${i}`).val()) || 0;
       let gst = 12.5;
@@ -46,19 +44,19 @@ $(document).ready(function () {
     let totalAmount = 0,
       totalCGST = 0,
       totalSGST = 0;
+
     $("#invoiceBody tr").each(function () {
-      
       let rowId = $(this).attr("id").replace("row", "");
       let qty = parseFloat($(`#qty${rowId}`).val()) || 0;
       let rate = parseFloat($(`#rate${rowId}`).val()) || 0;
       let cgst = parseFloat($(`#cgst${rowId}`).val()) || 0;
       let sgst = parseFloat($(`#sgst${rowId}`).val()) || 0;
-      
+
       totalAmount += qty * rate;
       totalCGST += cgst;
       totalSGST += sgst;
     });
-    
+
     let gstTotal = totalCGST + totalSGST;
     let grandTotal = totalAmount + gstTotal;
 
@@ -134,7 +132,6 @@ $(document).ready(function () {
           </tr>`;
 
     data.forEach((item, i) => {
-      
       table += `<tr>
                   <td>${item.Item}</td>
                   <td>${item.HsnSac}</td>
@@ -144,7 +141,14 @@ $(document).ready(function () {
                   <td>${item.CGST}</td>
                   <td>${item.SGST}</td>
                   <td>${item.GrandTotal}</td>
-                  <td><button class="btn btn-danger deleteSaved" data-index="${i}"><i class="bi bi-trash"></i></button></td>
+                  <td>
+                    <button class="btn btn-warning updateSaved" data-index="${i}">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-danger deleteSaved" data-index="${i}">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
                 </tr>`;
     });
     $("#savedTable").html(table);
@@ -156,6 +160,52 @@ $(document).ready(function () {
     data.splice(index, 1);
     localStorage.setItem("invoiceData", JSON.stringify(data));
     displaySavedData();
+  });
+
+  $(document).on("click", ".updateSaved", function () {
+    let index = $(this).data("index");
+    let data = JSON.parse(localStorage.getItem("invoiceData")) || [];
+    let record = data[index];
+
+    data.splice(index, 1);
+    localStorage.setItem("invoiceData", JSON.stringify(data));
+    displaySavedData();
+
+    addRow(record);
+  });
+
+  $("#downloadPDF").click(function () {
+    let data = JSON.parse(localStorage.getItem("invoiceData")) || [];
+
+    if (data.length === 0) {
+      alert("No data available to generate PDF!");
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Invoice Records", 14, 20);
+
+    let rows = data.map(item => [
+      item.Item,
+      item.HsnSac,
+      item.GSTRate,
+      item.Quantity,
+      item.Rate,
+      item.CGST,
+      item.SGST,
+      item.GrandTotal
+    ]);
+
+    doc.autoTable({
+      head: [["Item", "HSN", "GST", "Qty", "Rate", "CGST", "SGST", "Grand Total"]],
+      body: rows,
+      startY: 30,
+    });
+
+    doc.save("invoice_records.pdf");
   });
 
   displaySavedData();
